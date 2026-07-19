@@ -1,0 +1,13 @@
+{
+  "appId": "ai.trademate.app",
+  "appName": "TradeMateAI",
+  "webDir": "www",
+  "server": {
+    "url": "https://f058ce2575a5daf11ba9a52037f5f76c.ctonew.app",
+    "cleartext": false
+  },
+  "ios": {
+    "scheme": "TradeMateAI",
+    "contentInset": "automatic"
+  }
+}

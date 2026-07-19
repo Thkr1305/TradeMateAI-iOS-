@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- Solid blue background -->
+  <rect width="1024" height="1024" fill="#1D4ED8"/>
+
+  <!-- Hammer head forming the top of the "T" -->
+  <rect x="260" y="320" width="280" height="100" rx="16" fill="white"/>
+  <!-- hammer head extensions (claw side) -->
+  <rect x="220" y="335" width="60" height="70" rx="10" fill="white"/>
+  <rect x="200" y="350" width="30" height="50" rx="8" fill="white"/>
+
+  <!-- Hammer handle forming the stem of the "T" -->
+  <rect x="375" y="400" width="90" height="380" rx="14" fill="white"/>
+
+  <!-- Letter "m" next to the hammer -->
+  <!-- First stem of m -->
+  <rect x="580" y="420" width="50" height="280" rx="10" fill="white"/>
+  <!-- Second stem of m -->
+  <rect x="680" y="420" width="50" height="280" rx="10" fill="white"/>
+  <!-- m arch (left) -->
+  <path d="M 630 420 L 630 520 Q 630 430 680 430" fill="none" stroke="white" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- m arch (right) -->
+  <path d="M 680 430 Q 730 430 730 520 L 730 420" fill="none" stroke="white" stroke-width="50" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Small AI sparkle accent (upper right of hammer head) -->
+  <path d="M 480 260 L 488 278 L 506 282 L 488 286 L 480 304 L 472 286 L 454 282 L 472 278 Z" fill="white"/>
+</svg>
