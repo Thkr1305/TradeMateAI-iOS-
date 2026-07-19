@@ -9,6 +9,8 @@ workflows:
       node: 22.0.0
       xcode: 16.0
       cocoapods: default
+      vars:
+        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_API_KEY
     triggering:
       events:
         - push
@@ -20,32 +22,22 @@ workflows:
         script: npm install
       - name: Sync Capacitor to iOS
         script: npx @capacitor/cli sync ios
-      - name: Configure App Store Connect key
+      - name: Fetch signing files
         script: |
-          mkdir -p ~/.appstoreconnect/private_keys
-          echo "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
-          chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
-      - name: Archive
+          app-store-connect fetch-signing-files "ai.trademate.app" \
+            --type IOS_APP_STORE \
+            --create
+      - name: Build iOS
         script: |
-          cd ios/App
-          xcodebuild archive \
-            -workspace App.xcworkspace \
-            -scheme App \
-            -sdk iphoneos \
-            -configuration Release \
-            -archivePath $PWD/build/App.xcarchive \
-            -allowProvisioningUpdates
-      - name: Export IPA
-        script: |
-          cd ios/App
-          xcodebuild -exportArchive \
-            -archivePath $PWD/build/App.xcarchive \
-            -exportOptionsPlist $PWD/exportOptions.plist \
-            -exportPath $PWD/build/ipa \
-            -allowProvisioningUpdates \
-            -authenticationKeyIssuerID $APP_STORE_CONNECT_ISSUER_ID \
-            -authenticationKeyID $APP_STORE_CONNECT_KEY_ID \
-            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+          xcode-project build-ipa \
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App"
     artifacts:
-      - ios/App/build/ipa/*.ipa
+      - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        key_id: $APP_STORE_CONNECT_KEY_ID
+        submit_to_app_store: false
