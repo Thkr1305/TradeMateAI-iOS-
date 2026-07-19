@@ -23,6 +23,12 @@ workflows:
       - name: Sync Capacitor to iOS
         script: |
           npx @capacitor/cli sync ios
+      - name: Set up code signing
+        script: |
+          keychain initialize
+          app-store-connect fetch-signing-files "ai.trademate.app" \
+            --type IOS_APP_STORE \
+            --create
       - name: Build iOS archive
         script: |
           cd ios/App
@@ -31,6 +37,7 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             -archivePath $PWD/build/App.xcarchive \
+            CODE_SIGN_STYLE=Manual \
             archive
       - name: Export IPA
         script: |
