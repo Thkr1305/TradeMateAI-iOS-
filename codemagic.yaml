@@ -9,9 +9,6 @@ workflows:
       node: 22.0.0
       xcode: 16.0
       cocoapods: default
-      vars:
-        XCODE_WORKSPACE: ios/App/App.xcworkspace
-        XCODE_SCHEME: App
     triggering:
       events:
         - push
@@ -23,17 +20,11 @@ workflows:
         script: npm install
       - name: Sync Capacitor to iOS
         script: npx @capacitor/cli sync ios
-      - name: Set up code signing
-        script: |
-          keychain initialize
-          app-store-connect fetch-signing-files "ai.trademate.app" \
-            --type IOS_APP_STORE \
-            --create
       - name: Build iOS
         script: |
           xcode-project build-ipa \
-            --workspace "$XCODE_WORKSPACE" \
-            --scheme "$XCODE_SCHEME"
+            --workspace "ios/App/App.xcworkspace" \
+            --scheme "App"
     artifacts:
       - build/ios/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
