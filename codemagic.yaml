@@ -1,5 +1,4 @@
 # TradeMateAI — Codemagic iOS Build Configuration
-# Docs: https://docs.codemagic.io/yaml/yaml/
 
 workflows:
   ios-build:
@@ -16,15 +15,11 @@ workflows:
       branch_patterns:
         - pattern: main
           include: true
-    code_signing:
-      automatic: true
     scripts:
       - name: Install dependencies
-        script: |
-          npm install
+        script: npm install
       - name: Sync Capacitor to iOS
-        script: |
-          npx @capacitor/cli sync ios
+        script: npx @capacitor/cli sync ios
       - name: Build iOS archive
         script: |
           cd ios/App
@@ -33,6 +28,8 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             -archivePath $PWD/build/App.xcarchive \
+            CODE_SIGN_STYLE=Automatic \
+            DEVELOPMENT_TEAM=$APPLE_TEAM_ID \
             archive
       - name: Export IPA
         script: |
