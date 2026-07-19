@@ -25,12 +25,22 @@ workflows:
           npx @capacitor/cli sync ios
       - name: Build iOS archive
         script: |
-          xcode-project build-ipa \
-            --workspace "ios/App/App.xcworkspace" \
-            --scheme "App" \
-            --archive-flags="-destination 'generic/platform=iOS'"
+          cd ios/App
+          xcodebuild -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath $PWD/build/App.xcarchive \
+            archive
+      - name: Export IPA
+        script: |
+          cd ios/App
+          xcodebuild -exportArchive \
+            -archivePath $PWD/build/App.xcarchive \
+            -exportOptionsPlist $PWD/exportOptions.plist \
+            -exportPath $PWD/build/ipa
     artifacts:
-      - build/ios/ipa/*.ipa
+      - ios/App/build/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
     publishing:
       app_store_connect:
