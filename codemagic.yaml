@@ -20,6 +20,10 @@ workflows:
         script: npm install
       - name: Sync Capacitor to iOS
         script: npx @capacitor/cli sync ios
+      - name: Configure App Store Connect key
+        script: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          echo "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
       - name: Archive
         script: |
           cd ios/App
@@ -29,7 +33,10 @@ workflows:
             -sdk iphoneos \
             -configuration Release \
             -archivePath $PWD/build/App.xcarchive \
-            -allowProvisioningUpdates
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_ISSUER_ID \
+            -authenticationKeyID $APP_STORE_CONNECT_KEY_ID \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
       - name: Export IPA
         script: |
           cd ios/App
@@ -37,13 +44,10 @@ workflows:
             -archivePath $PWD/build/App.xcarchive \
             -exportOptionsPlist $PWD/exportOptions.plist \
             -exportPath $PWD/build/ipa \
-            -allowProvisioningUpdates
+            -allowProvisioningUpdates \
+            -authenticationKeyIssuerID $APP_STORE_CONNECT_ISSUER_ID \
+            -authenticationKeyID $APP_STORE_CONNECT_KEY_ID \
+            -authenticationKeyPath ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
     artifacts:
       - ios/App/build/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_API_KEY
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        key_id: $APP_STORE_CONNECT_KEY_ID
-        submit_to_app_store: false
