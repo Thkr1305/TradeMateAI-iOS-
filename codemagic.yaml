@@ -9,6 +9,9 @@ workflows:
       node: 22.0.0
       xcode: 16.0
       cocoapods: default
+      vars:
+        APP_STORE_CONNECT_KEY_ID: $APP_STORE_CONNECT_KEY_ID
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
     triggering:
       events:
         - push
