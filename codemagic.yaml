@@ -10,7 +10,8 @@ workflows:
       xcode: 16.0
       cocoapods: default
       vars:
-        APP_STORE_CONNECT_PRIVATE_KEY: $APP_STORE_CONNECT_API_KEY
+        APP_STORE_CONNECT_KEY_ID: $APP_STORE_CONNECT_KEY_ID
+        APP_STORE_CONNECT_ISSUER_ID: $APP_STORE_CONNECT_ISSUER_ID
     triggering:
       events:
         - push
@@ -22,22 +23,23 @@ workflows:
         script: npm install
       - name: Sync Capacitor to iOS
         script: npx @capacitor/cli sync ios
-      - name: Fetch signing files
+      - name: Place App Store Connect key
         script: |
-          app-store-connect fetch-signing-files "ai.trademate.app" \
-            --type IOS_APP_STORE \
-            --create
-      - name: Build iOS
+          mkdir -p ~/".appstoreconnect/private_keys"
+          echo "$APP_STORE_CONNECT_API_KEY" > ~/.appstoreconnect/private_keys/AuthKey_${APP_STORE_CONNECT_KEY_ID}.p8
+      - name: Build & Export
         script: |
-          xcode-project build-ipa \
-            --workspace "ios/App/App.xcworkspace" \
-            --scheme "App"
+          cd ios/App
+          xcodebuild archive \
+            -workspace App.xcworkspace \
+            -scheme App \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath build/App.xcarchive
+          xcodebuild -exportArchive \
+            -archivePath build/App.xcarchive \
+            -exportOptionsPlist exportOptions.plist \
+            -exportPath build/ipa
     artifacts:
-      - build/ios/ipa/*.ipa
+      - ios/App/build/ipa/*.ipa
       - /tmp/xcodebuild_logs/*.log
-    publishing:
-      app_store_connect:
-        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
-        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
-        key_id: $APP_STORE_CONNECT_KEY_ID
-        submit_to_app_store: false
